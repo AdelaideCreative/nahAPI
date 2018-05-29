@@ -1,0 +1,18 @@
+#!/bin/bash
+
+cd /var/www/nahapi
+exec >> log/minutely.log 2>&1
+
+bin/nah getinfo > etc/nah.info 2>&1
+
+# this could be moved to the "onblock" callback from the dameon... but whatever for now
+
+# simple status file shows current success codes for all minutely jobs 
+echo time:`date +%s` > etc/nah.status.new
+avail=`df . | perl -ne 'print $1 if /\S+\s+\d+\s+\S+\s+(\d+)/'`
+echo "avail:$avail" >> etc/nah.status.new
+bin/forward && echo forward:1 >> etc/nah.status.new             # forward transactions, add to db
+bin/callback && echo callback:1 >> etc/nah.status.new            # hit some urls
+bin/loadlog && echo loadlog:1 >> etc/nah.status.new             # in case db was down, load from log
+bin/repair && echo repair:1 >> etc/nah.status.new              # in case log didn't work, use the blockchain
+mv -f etc/nah.status.new etc/nah.status

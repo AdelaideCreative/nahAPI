@@ -1,0 +1,6 @@
+#!/bin/bash
+if [ -n "$1" ]; then
+sudo -u nah psql nah -c "$@"
+else
+sudo -u nah psql nah
+fi

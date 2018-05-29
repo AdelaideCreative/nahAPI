@@ -1,0 +1,4 @@
+#!/bin/bash
+HOME=`dirname $0`/..
+cd $HOME
+/usr/local/bin/strayacoind -datadir=coin -conf=nah.conf -pid=etc/nah.pid -daemon
