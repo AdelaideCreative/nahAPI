@@ -31,9 +31,10 @@ perl -MData::URIEncode -e 1 2> /dev/null || cpan -i 'Data::URIEncode'
 
 if [ ! -n "`which pgsql`" ]; then
     yum -y install postgresql postgresql-server postgresql-contrib 
-    service postgresql initdb 
+    sudo postgresql-setup initdb
     rsync -a $host:/var/lib/pgsql/data/pg_hba.conf /var/lib/pgsql/data/pg_hba.conf
-    /etc/init.d/postgresql start
+    sudo systemctl start postgresql
+    sudo systemctl enable postgresql
 
     # nicer when they're all the same number
     groupadd -g 502 nah
@@ -42,7 +43,9 @@ if [ ! -n "`which pgsql`" ]; then
     # load user info
     #sudo -u postgres psql < bin/user.sql
     # load db itself
+    sudo -i -u postgres
     sudo -u postgres psql nah < bin/nah.sql
+    logout
 fi
 
 # this should work by now, if not, bash-e will drop out
